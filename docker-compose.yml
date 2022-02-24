@@ -1,0 +1,22 @@
+version: '2.1'
+
+services:
+  app:
+    build:
+      context: .
+    volumes:
+      - "./response.json:/api/response.json"
+      - "./nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf"
+      - "./src/:/lua/src/"
+    ports:
+      - "7070:7070"
+      - "8080:8080"
+      - "9090:9090"
+
+  lint:
+    command: bash -c "luacheck -q ."
+    build:
+      context: .
+    volumes:
+      - ".:/lua/"
+    working_dir: "/lua"
