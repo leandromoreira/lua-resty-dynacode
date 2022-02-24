@@ -1,0 +1,79 @@
+{
+  "general": {
+    "status": "enabled",
+    "skip_domains": [
+      "[\\w\\d\\.\\-]*server.local.com"
+    ]
+  },
+  "domains": [
+    {
+      "name": "*",
+      "plugins": [
+        {
+          "name": "Apply_CORs",
+          "version": 1,
+          "status": "enabled",
+          "plugins": [
+            {
+              "name": "Apply_CORs",
+              "code": "ngx.header['Access-Control-Allow-Origin'] = 'http://example1.com'",
+              "phase": "access"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "webp.local.com",
+      "plugins": [
+        {
+          "name": "Serve_Webp",
+          "version": 1,
+          "status": "enabled",
+          "plugins": [
+            {
+              "name": "Match_Webp",
+              "code": "return ngx.re.find('\\.webp$', ngx.var.uri) ~= nil",
+              "type": "checker",
+              "phase": "access"
+            },
+            {
+              "name": "Create_Webp",
+              "code": "ngx.say('this is a webp file, believe')",
+              "phase": "content"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "gateway.local.com",
+      "plugins": [
+        {
+          "name": "Gateway_For_WebP_Or_API",
+          "version": 1,
+          "status": "enabled",
+          "plugins": [
+            {
+              "name": "Match_Webp_Or_Json",
+              "code": "return ngx.re.find('(\\.webp|\\.json)$', ngx.var.uri) ~= nil",
+              "type": "checker",
+              "phase": "access"
+            },
+            {
+              "name": "Authorized",
+              "code": "return ngx.var.arg_token == '0xcafe'",
+              "type": "checker",
+              "phase": "access"
+            },
+            {
+              "name": "Define_Upstream",
+              "cond": "ngx.var.gateway_upstream = ngx.re.find('(\\.webp)$', ngx.var.uri) then 'webp.local.com' else 'apiserver.local.com' end",
+              "phase": "access"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
