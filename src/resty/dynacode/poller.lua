@@ -1,37 +1,51 @@
-local spawn = {}
-local mandatory_opts = {"workers_max_jitter", "interval"}
+local validator = require "resty.dynacode.validator"
+local opts = require "resty.dynacode.opts"
 
-function spawn.logger(msg)
-  ngx.log(ngx.ERR, msg)
+local spawn = {}
+
+spawn.interval = nil
+spawn.workers_max_jitter = nil
+spawn.callback = nil
+spawn.start_right_away = false
+spawn.ready = false
+spawn.validation_rules = {
+  validator.present_number("interval"),
+  validator.present_number("workers_max_jitter"),
+  validator.present_function("callback"),
+}
+
+function spawn.logger(msg) print(msg) end
+
+function spawn.setup(opt)
+  local ok, err = validator.valid(spawn.validation_rules, opt)
+  if not ok then
+    return false, err
+  end
+
+  opts.merge(spawn, opt)
+  spawn.ready = true
+
+  return true, nil
 end
 
-function spawn.poll(callback, opts)
-
-  if not callback or type(callback) ~= "function" then
-    spawn.logger("you must inform a proper callback function")
+function spawn.run()
+  if not spawn.ready then
+    spawn.logger("the poller was not properly setup")
     return
   end
 
-  for _, v in pairs(mandatory_opts) do
-    if not opts[v] then
-      spawn.logger("you must inform " .. v)
-      return
-    end
-  end
-
-  ngx.log(ngx.ERR, "poll")
   -- starting luajit entropy per worker
   math.randomseed(ngx.time() + ngx.worker.pid())
 
-  local jitter_seconds = math.random(1, opts.workers_max_jitter)
-  local worker_interval_seconds = opts.interval + jitter_seconds
+  local jitter_seconds = math.random(1, spawn.workers_max_jitter)
+  local worker_interval_seconds = spawn.interval + jitter_seconds
 
-  -- scheduling recurring a polling
-  ngx.timer.every(worker_interval_seconds, callback)
+  -- scheduling recurring task
+  ngx.timer.every(worker_interval_seconds, spawn.callback)
 
-  -- polling right away (in the next nginx "cicle")
-  -- to avoid all the workers to go downstream we add a jitter of 60s
-  if opts.fetch_at_start then ngx.timer.at(0 + math.random(0, 60), callback) end
+  -- polling right away (in the next nginx "cicle") is enabled
+  -- then avoid all the workers requesting at the same time, we added a possible jitter of 5s TODO: configurable
+  if spawn.start_right_away then ngx.timer.at(0 + math.random(0, 5), spawn.callback) end
 end
 
 return spawn

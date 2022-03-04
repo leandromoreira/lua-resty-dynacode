@@ -1,54 +1,43 @@
 local http = require "resty.http"
-local json = require "cjson"
+local opts = require("resty.dynacode.opts")
+local validator = require "resty.dynacode.validator"
 
 local fetch = {}
+local MS = 1000 -- ms to convert seconds
 
 fetch.plugin_api_uri = nil
-fetch.plugin_api_pooling_interval = 30
 fetch.plugin_api_timeout = 5
-fetch.cache_key = "dynacode_response"
-fetch.cache = nil
+fetch.plugin_api_params = nil
 
-function fetch.logger(msg)
-  ngx.log(ngx.ERR, msg)
-end
+fetch.validation_rules = {
+  validator.present_string("plugin_api_uri"),
+}
 
-function fetch.fetch_code()
-  if not fetch.cache or not fetch.plugin_api_uri then
-    fetch.logger("error - the fetcher must have a proper cache and the api uri")
-    return
-  end
-  local _, err, hitlevel = fetch.cache:get(fetch.cache_key, nil, fetch.__fetch_code_callback)
-
-  if err ~= nil and type(err) == "string" and err ~= "" then
-    fetch.logger("there was an error while fetching " .. fetch.plugin_api_uri .. " err= " .. err)
-    return
+function fetch.setup(opt)
+  local ok, err = validator.valid(fetch.validation_rules, opt)
+  if not ok then
+    return false, err
   end
 
-  ngx.log(ngx.ERR, "cache hit level = " .. hitlevel)
+  opts.merge(fetch, opt)
+
+  return true, nil
 end
 
-function fetch.__fetch_code_callback()
+function fetch.request_api()
   local httpc = http.new()
-  httpc:set_timeout(fetch.plugin_api_timeout * 1000)
-  local res_api, err_api = httpc:request_uri(fetch.plugin_api_uri)
+  httpc:set_timeout(fetch.plugin_api_timeout * MS)
+  local res_api, err_api = httpc:request_uri(fetch.plugin_api_uri, fetch.plugin_api_params)
 
   if err_api ~= nil and type(err_api) == "string" and err_api ~= "" then
-    fetch.logger("there was an error while fetching " .. fetch.plugin_api_uri .. " err= " .. err_api)
-    return nil, "error"
+    return nil, string.format("there was an error while fetching %s err=%s", fetch.plugin_api_uri, err_api)
   end
 
   if res_api.status ~= 200 then
-    fetch.logger("there was an error while fetching status code <> from 200 status code = " .. res_api.status)
-    return nil, "error"
+    return nil, string.format("there was an error while fetching %s status code %d", fetch.plugin_api_uri, res_api.status)
   end
 
-  local api_response, err = json.decode(res_api.body)
-  if err ~= nil then
-    fetch.logger("there was an error while decoding the api response " .. err)
-    return nil, "error"
-  end
-  return api_response, nil
+  return res_api.body, nil
 end
 
 return fetch
