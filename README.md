@@ -23,6 +23,7 @@ A library to provide dynamic (via json/API) load of lua code into your nginx/ope
 
 # Road map
 
+* publish a rock
 * off-line mode (saving a local api response for -HUP/restart without link to API)
 * discuss the json format (making phases accessible without iterating through all plugins)
 * offer events callbacks (like: `on_compile_fail`, `on_success`, `...`)
