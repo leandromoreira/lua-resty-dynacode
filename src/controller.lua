@@ -1,12 +1,13 @@
 local dyna_controller = require "resty.dynacode.controller"
 local controller = {}
 
+
 local ok, err = dyna_controller.setup({
   plugin_api_uri = "http://localhost:9090/response.json",
-  plugin_api_pooling_interval = 15,
+  plugin_api_polling_interval = 15,
   workers_max_jitter = 5,
   shm = "cache_dict",
-  plugin_api_pool_at_init = true,
+  plugin_api_poll_at_init = true,
 })
 
 if not ok then

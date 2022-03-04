@@ -5,7 +5,7 @@ domains:
   - name: "*"
     plugins:
       - name: Apply_CORs
-        code: "ngx.header['Access-Control-Allow-Origin'] = 'http://example1.com'"
+        code: "ngx.header['Access-Control-Allow-Origin'] = 'http://www.example1.com'"
         phase: access
   - name: "webp.local.com"
     plugins:
