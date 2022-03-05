@@ -8,9 +8,11 @@ local MS = 1000 -- ms to convert seconds
 fetch.plugin_api_uri = nil
 fetch.plugin_api_timeout = 5
 fetch.plugin_api_params = nil
+fetch.events = nil
 
 fetch.validation_rules = {
   validator.present_string("plugin_api_uri"),
+  validator.present_table("events"),
 }
 
 function fetch.setup(opt)
@@ -30,13 +32,16 @@ function fetch.request_api()
   local res_api, err_api = httpc:request_uri(fetch.plugin_api_uri, fetch.plugin_api_params)
 
   if err_api ~= nil and type(err_api) == "string" and err_api ~= "" then
+    fetch.events.emit(fetch.events.BG_FETCH_API_GENERIC_ERROR, err_api)
     return nil, string.format("there was an error while fetching %s err=%s", fetch.plugin_api_uri, err_api)
   end
 
   if res_api.status ~= 200 then
+    fetch.events.emit(fetch.events.BG_FETCH_API_STATUS_CODE_ERROR, res_api.status)
     return nil, string.format("there was an error while fetching %s status code %d", fetch.plugin_api_uri, res_api.status)
   end
 
+  fetch.events.emit(fetch.events.BG_FETCH_API_SUCCESS)
   return res_api.body, nil
 end
 

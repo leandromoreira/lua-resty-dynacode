@@ -1,4 +1,24 @@
+local validator = require "resty.dynacode.validator"
+local opts = require "resty.dynacode.opts"
+
 local compiler = {}
+
+compiler.events = nil
+
+compiler.validation_rules = {
+  validator.present_table("events"),
+}
+
+function compiler.setup(opt)
+  local ok, err = validator.valid(compiler.validation_rules, opt)
+  if not ok then
+    return false, err
+  end
+
+  opts.merge(compiler, opt)
+
+  return true, nil
+end
 
 function compiler.compile(api_response)
   local errors = {}
@@ -11,8 +31,10 @@ function compiler.compile(api_response)
         plugin.skip = true -- avoid runnning it
         err = string.format("the plugin %s raised an error %s during compilation", plugin.name, err)
         table.insert(errors, err)
+        compiler.events.emit(compiler.events.BG_COMPILE_ERROR, plugin, err)
       else
         plugin.compiled_code = compiled_fun -- adding the compiled function
+        compiler.events.emit(compiler.events.BG_COMPILE_SUCCESS, plugin)
       end
 
     end
