@@ -11,7 +11,7 @@
       "plugins": [
         {
           "name": "Apply_CORs",
-          "code": "ngx.header['Access-Control-Allow-Origin'] = 'http://example1.com'",
+          "code": "ngx.header['Access-Control-Allow-Origin'] = 'http://www.example1.com'",
           "phase": "access"
         }
       ]
@@ -41,12 +41,12 @@
         },
         {
           "name": "Authorized",
-          "code": "if not ngx.var.arg_token == '0xcafe' then ngx.exit(ngx.HTTP_UNAUTHORIZED) end",
+          "code": "if ngx.var.arg_token ~= '0xcafe' then ngx.exit(ngx.HTTP_UNAUTHORIZED) end",
           "phase": "access"
         },
         {
           "name": "Define_Upstream",
-          "code": "if ngx.re.find(ngx.var.uri, '(\\\\.webp)$') then ngx.var.gateway_upstream = '127.0.0.1:8080' else ngx.var.gateway_upstream = '127.0.0.1:9090' end",
+          "code": "if ngx.re.find(ngx.var.uri, '(\\\\.webp)$') then ngx.var.gateway_upstream = '127.0.0.1:8080' else ngx.var.gateway_upstream = '127.0.0.1:6060' end",
           "phase": "access"
         }
       ]

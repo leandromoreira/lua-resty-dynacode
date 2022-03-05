@@ -21,10 +21,10 @@ domains:
         code: "if not ngx.re.find(ngx.var.uri, '(\\\\.webp|\\\\.json)$') then ngx.exit(ngx.HTTP_NOT_FOUND) end"
         phase: access
       - name: Authorized
-        code: "if not ngx.var.arg_token == '0xcafe' then ngx.exit(ngx.HTTP_UNAUTHORIZED) end"
+        code: "if ngx.var.arg_token ~= '0xcafe' then ngx.exit(ngx.HTTP_UNAUTHORIZED) end"
         phase: access
       - name: Define_Upstream
-        code: "if ngx.re.find(ngx.var.uri, '(\\\\.webp)$') then ngx.var.gateway_upstream = '127.0.0.1:8080' else ngx.var.gateway_upstream = '127.0.0.1:9090' end"
+        code: "if ngx.re.find(ngx.var.uri, '(\\\\.webp)$') then ngx.var.gateway_upstream = '127.0.0.1:8080' else ngx.var.gateway_upstream = '127.0.0.1:6060' end"
         phase: access
 
   # rewrite phase check route to define UPSTREAM (using variables)

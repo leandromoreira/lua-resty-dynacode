@@ -38,10 +38,11 @@ function event_emitter.on(event_name, callback)
 end
 
 function event_emitter.emit(event_name, ...)
+  local args = {...}
   if event_emitter.events[event_name] ~= nil then
     for _, callback in ipairs(event_emitter.events[event_name]) do
-      if arg then
-        callback(unpack(arg))
+      if args ~= nil and #args > 0 then
+        callback(unpack(args))
       else
         callback()
       end
