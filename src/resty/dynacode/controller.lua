@@ -34,7 +34,7 @@ controller.validation_rules = {
 function controller.setup(opt)
   local ok, err = validator.valid(controller.validation_rules, opt)
   if not ok then
-    controller.events.on(controller.events.ON_ERROR, 'validation', err)
+    controller.events.emit(controller.events.ON_ERROR, 'validation', err)
     controller.logger(err)
     return false, err
   end
@@ -50,7 +50,7 @@ function controller.setup(opt)
   })
   if not ok then
     controller.logger(string.format("it was not possible to setup the cache due to %s", err))
-    controller.events.on(controller.events.ON_ERROR, 'setup', err)
+    controller.events.emit(controller.events.ON_ERROR, 'setup', err)
     return false
   end
 
@@ -60,7 +60,7 @@ function controller.setup(opt)
   })
   if not ok then
     controller.logger(string.format("it was not possible to setup the compiler due to %s", err))
-    controller.events.on(controller.events.ON_ERROR, 'setup', err)
+    controller.events.emit(controller.events.ON_ERROR, 'setup', err)
     return false
   end
 
@@ -72,7 +72,7 @@ function controller.setup(opt)
   })
   if not ok then
     controller.logger(string.format("it was not possible to setup the runner due to %s", err))
-    controller.events.on(controller.events.ON_ERROR, 'setup', err)
+    controller.events.emit(controller.events.ON_ERROR, 'setup', err)
     return false
   end
 
@@ -84,7 +84,7 @@ function controller.setup(opt)
   })
   if not ok then
     controller.logger(string.format("it was not possible to setup the fetch api due to %s", err))
-    controller.events.on(controller.events.ON_ERROR, 'setup', err)
+    controller.events.emit(controller.events.ON_ERROR, 'setup', err)
     return false
   end
 
@@ -98,7 +98,7 @@ function controller.setup(opt)
   })
   if not ok then
     controller.logger(string.format("it was not possible to setup the poller due to %s", err))
-    controller.events.on(controller.events.ON_ERROR, 'setup', err)
+    controller.events.emit(controller.events.ON_ERROR, 'setup', err)
     return false
   end
 
@@ -151,7 +151,7 @@ end
 function controller.run()
   local ok, err = pcall(controller._run)
   if not ok then
-    controller.events.on(controller.events.ON_ERROR, 'general_run', err)
+    controller.events.emit(controller.events.ON_ERROR, 'general_run', err)
     controller.logger(string.format("there was an general error during the run err = %s", err))
   end
 end

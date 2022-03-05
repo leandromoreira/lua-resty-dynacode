@@ -1,7 +1,6 @@
 local dyna_controller = require "resty.dynacode.controller"
 local controller = {}
 
-
 local ok, err = dyna_controller.setup({
   plugin_api_uri = "http://api:9090/response.json",
   plugin_api_polling_interval = 15,
@@ -9,6 +8,9 @@ local ok, err = dyna_controller.setup({
   workers_max_jitter = 5,
   shm = "cache_dict",
 })
+if not ok then
+  ngx.log(ngx.ERR, string.format("error during the setup err=%s",err))
+end
 
 dyna_controller.events.on(dyna_controller.events.BG_CACHE_HIT, function()
   ngx.log(ngx.ERR, "cache hit")
@@ -42,9 +44,6 @@ dyna_controller.events.on(dyna_controller.events.RT_PLUGINS_ERROR, function(plug
   ngx.log(ngx.ERR, string.format("error while running %s err=%s", plugin.name, err))
 end)
 
-if not ok then
-  ngx.log(ngx.ERR, string.format("error during the setup err=%s",err))
-end
 
 function controller.run()
   dyna_controller.run()

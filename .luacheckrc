@@ -1,2 +1,2 @@
 std="ngx_lua+busted"
-max_line_length=160
+max_line_length=180
