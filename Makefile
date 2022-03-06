@@ -4,6 +4,9 @@ run: yaml_2_json
 lint:
 	docker-compose run --rm lint
 
+test:
+	docker-compose run --rm test
+
 yaml_2_json:
 	docker run --rm -v "${PWD}":/workdir mikefarah/yq -o=json eval rules.yaml > response.json
 

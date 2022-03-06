@@ -33,3 +33,11 @@ services:
     volumes:
       - ".:/lua/"
     working_dir: "/lua"
+
+  test:
+    command: ./resty_busted -c --shuffle
+    build:
+      context: .
+    volumes:
+      - ".:/lua/"
+    working_dir: "/lua"
