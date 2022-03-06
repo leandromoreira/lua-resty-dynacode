@@ -8,6 +8,7 @@ local ok, setup_err = dyna_controller.setup({
   workers_max_jitter = 5,
   shm = "cache_dict",
 })
+
 if not ok then
   ngx.log(ngx.ERR, string.format("error during the setup err=%s", setup_err))
 end
@@ -63,6 +64,39 @@ end)
 dyna_controller.events.on(dyna_controller.events.ON_ERROR, function(section, err)
   ngx.log(ngx.ERR, string.format("error at %s err=%s", section, err))
 end)
+
+local metrics_ngx_shared = ngx.shared.metrics_dict
+local events = {
+  dyna_controller.events.BG_CACHE_HIT,
+  dyna_controller.events.BG_CACHE_MISS,
+  dyna_controller.events.BG_FETCH_API_SUCCESS,
+  dyna_controller.events.BG_FETCH_API_STATUS_CODE_ERROR,
+  dyna_controller.events.BG_FETCH_API_GENERIC_ERROR,
+  dyna_controller.events.BG_COMPILE_ERROR,
+  dyna_controller.events.BG_COMPILE_SUCCESS,
+  dyna_controller.events.BG_UPDATED_PLUGINS,
+  dyna_controller.events.BG_DIDNT_UPDATE_PLUGINS,
+  dyna_controller.events.RT_PLUGINS_STARTING,
+  dyna_controller.events.RT_PLUGINS_DONE,
+  dyna_controller.events.RT_PLUGINS_ERROR,
+  dyna_controller.events.ON_ERROR,
+}
+
+for _, event in ipairs(events) do
+  dyna_controller.events.on(event, function()
+    metrics_ngx_shared:incr(event, 1, 0)
+  end)
+end
+
+function controller.render_metrics()
+  local results = {}
+  for _, event in ipairs(events) do
+    local val = metrics_ngx_shared:get(event)
+    results[event] = val
+  end
+
+  ngx.say(require("cjson").encode(results))
+end
 
 function controller.run()
   dyna_controller.run()
