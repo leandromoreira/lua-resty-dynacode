@@ -1,7 +1,7 @@
 local dyna_controller = require "resty.dynacode.controller"
 local controller = {}
 
-local ok, err = dyna_controller.setup({
+local ok, setup_err = dyna_controller.setup({
   plugin_api_uri = "http://api:9090/response.json",
   plugin_api_polling_interval = 15,
   plugin_api_poll_at_init = true,
@@ -9,7 +9,7 @@ local ok, err = dyna_controller.setup({
   shm = "cache_dict",
 })
 if not ok then
-  ngx.log(ngx.ERR, string.format("error during the setup err=%s",err))
+  ngx.log(ngx.ERR, string.format("error during the setup err=%s", setup_err))
 end
 
 dyna_controller.events.on(dyna_controller.events.BG_CACHE_HIT, function()
@@ -29,7 +29,7 @@ dyna_controller.events.on(dyna_controller.events.BG_FETCH_API_STATUS_CODE_ERROR,
 end)
 
 dyna_controller.events.on(dyna_controller.events.BG_FETCH_API_GENERIC_ERROR, function(err)
-  ngx.log(ngx.ERR, string.format("api err=%d", err))
+  ngx.log(ngx.ERR, string.format("api err=%s", err))
 end)
 
 dyna_controller.events.on(dyna_controller.events.BG_COMPILE_SUCCESS, function(plugin)
@@ -38,6 +38,14 @@ end)
 
 dyna_controller.events.on(dyna_controller.events.BG_COMPILE_ERROR, function(plugin, err)
   ngx.log(ngx.ERR, string.format("compile error %s err=%s", plugin.name, err))
+end)
+
+dyna_controller.events.on(dyna_controller.events.BG_UPDATED_PLUGINS, function()
+  ngx.log(ngx.ERR, "updated plugins with success")
+end)
+
+dyna_controller.events.on(dyna_controller.events.BG_DIDNT_UPDATE_PLUGINS, function()
+  ngx.log(ngx.ERR, "didnt updated plugins with success")
 end)
 
 dyna_controller.events.on(dyna_controller.events.RT_PLUGINS_STARTING, function(plugin)

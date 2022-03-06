@@ -23,7 +23,7 @@ controller.shm = nil
 controller.events = event_emitter
 
 function controller.logger(msg)
-  ngx.log(ngx.ERR, msg)
+  ngx.log(ngx.ERR, string.format("[dynacode phase=%s] %s", ngx.get_phase(), msg))
 end
 
 controller.validation_rules = {
@@ -57,6 +57,7 @@ function controller.setup(opt)
   -- compiler setup
   ok, err = compiler.setup({
     events = controller.events,
+    logger = controller.logger,
   })
   if not ok then
     controller.logger(string.format("it was not possible to setup the compiler due to %s", err))
@@ -122,6 +123,7 @@ function controller._recurrent_function()
     response, err = fetcher.request_api()
     if not response then
       controller.logger(string.format("it was not possible to request due to %s", err))
+      controller.events.emit(controller.events.BG_DIDNT_UPDATE_PLUGINS)
       return
     end
     cache.set(response)
@@ -153,7 +155,7 @@ function controller._recurrent_function()
   -- TODO: validate plugins minimal expected structure to not override current with invalid api response
   -- saving/updating the copy locally per worker
   controller.plugins = table_response
-  controller.events.emit(controller.events.BG_UPDATE_PLUGINS)
+  controller.events.emit(controller.events.BG_UPDATED_PLUGINS)
 end
 
 function controller.run()

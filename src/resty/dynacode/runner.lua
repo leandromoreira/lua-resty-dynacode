@@ -42,7 +42,7 @@ function runner.run(plugins)
   if plugins.general.skip_domains then
     for _, domain in  ipairs(plugins.general.skip_domains) do
       if ngx.re.find(host, domain, runner.regex_options) then
-        runner.logger(string.format("the domain=%s was skipped to host=", domain, host))
+        runner.logger(string.format("the domain=%s was skipped to host=%s", domain, host))
         return
       end
     end
