@@ -15,14 +15,15 @@ dependencies = {
 build = {
   type = "builtin",
   modules = {
-    ["resty.dynacode.controller"] = "src/resty/controller.lua",
-    ["resty.dynacode.cache"] = "src/resty/cache.lua",
-    ["resty.dynacode.compiler"] = "src/resty/compiler.lua",
-    ["resty.dynacode.fetch"] = "src/resty/fetch.lua",
-    ["resty.dynacode.opts"] = "src/resty/opts.lua",
-    ["resty.dynacode.poller"] = "src/resty/poller.lua",
-    ["resty.dynacode.runner"] = "src/resty/runner.lua",
-    ["resty.dynacode.validator"] = "src/resty/validator.lua",
+    ["resty.dynacode.controller"] = "src/resty/dynacode/controller.lua",
+    ["resty.dynacode.cache"] = "src/resty/dynacode/cache.lua",
+    ["resty.dynacode.compiler"] = "src/resty/dynacode/compiler.lua",
+    ["resty.dynacode.fetch"] = "src/resty/dynacode/fetch.lua",
+    ["resty.dynacode.opts"] = "src/resty/dynacode/opts.lua",
+    ["resty.dynacode.poller"] = "src/resty/dynacode/poller.lua",
+    ["resty.dynacode.runner"] = "src/resty/dynacode/runner.lua",
+    ["resty.dynacode.validator"] = "src/resty/dynacode/validator.lua",
+    ["resty.dynacode.event_emitter"] = "src/resty/dynacode/event_emitter.lua",
   }
 }
 

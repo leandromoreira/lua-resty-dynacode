@@ -6,7 +6,7 @@ local opts = require("resty.dynacode.opts")
 local validator = require("resty.dynacode.validator")
 local cache = require("resty.dynacode.cache")
 local event_emitter = require("resty.dynacode.event_emitter")
-local json = require "cjson"
+local json = require("cjson.safe")
 
 local controller = {}
 
@@ -108,6 +108,14 @@ end
 
 
 function controller.recurrent_function()
+  local ok, err = pcall(controller._recurrent_function)
+
+  if not ok then
+    controller.events.emit(controller.events.ON_ERROR, 'poll', err)
+  end
+end
+
+function controller._recurrent_function()
   local response, err
 
   if cache.should_refresh() then
@@ -117,23 +125,23 @@ function controller.recurrent_function()
       return
     end
     cache.set(response)
-    event_emitter.emit(event_emitter.BG_CACHE_MISS)
+    controller.events.emit(controller.events.BG_CACHE_MISS)
   else
     response = cache.get()
-    event_emitter.emit(event_emitter.BG_CACHE_HIT)
+    controller.events.emit(controller.events.BG_CACHE_HIT)
   end
 
   if not response or response == "" then
     controller.logger("the cache was empty")
-    event_emitter.emit(event_emitter.BG_DIDNT_UPDATE_PLUGINS)
+    controller.events.emit(controller.events.BG_DIDNT_UPDATE_PLUGINS)
     return
   end
 
   local table_response
   table_response, err = json.decode(response)
-  if err ~= nil then
-    controller.logger(string.format("there was an error while decoding the api response err=%s", err))
-    event_emitter.emit(event_emitter.BG_DIDNT_UPDATE_PLUGINS)
+  if table_response == nil or json.null == table_response or type(table_response) ~= "table" or err ~= nil then
+    controller.logger(string.format("the api response was invalid  (empty, null, not expected) err=%s", err))
+    controller.events.emit(controller.events.BG_DIDNT_UPDATE_PLUGINS)
     return
   end
 
@@ -145,7 +153,7 @@ function controller.recurrent_function()
   -- TODO: validate plugins minimal expected structure to not override current with invalid api response
   -- saving/updating the copy locally per worker
   controller.plugins = table_response
-  event_emitter.emit(event_emitter.BG_UPDATE_PLUGINS)
+  controller.events.emit(controller.events.BG_UPDATE_PLUGINS)
 end
 
 function controller.run()

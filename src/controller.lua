@@ -24,6 +24,14 @@ dyna_controller.events.on(dyna_controller.events.BG_FETCH_API_SUCCESS, function(
   ngx.log(ngx.ERR, "api success")
 end)
 
+dyna_controller.events.on(dyna_controller.events.BG_FETCH_API_STATUS_CODE_ERROR, function(status_code)
+  ngx.log(ngx.ERR, string.format("api <> 200 status=%d", status_code))
+end)
+
+dyna_controller.events.on(dyna_controller.events.BG_FETCH_API_GENERIC_ERROR, function(err)
+  ngx.log(ngx.ERR, string.format("api err=%d", err))
+end)
+
 dyna_controller.events.on(dyna_controller.events.BG_COMPILE_SUCCESS, function(plugin)
   ngx.log(ngx.ERR, string.format("compile success %s", plugin.name))
 end)
@@ -44,6 +52,9 @@ dyna_controller.events.on(dyna_controller.events.RT_PLUGINS_ERROR, function(plug
   ngx.log(ngx.ERR, string.format("error while running %s err=%s", plugin.name, err))
 end)
 
+dyna_controller.events.on(dyna_controller.events.ON_ERROR, function(section, err)
+  ngx.log(ngx.ERR, string.format("error at %s err=%s", section, err))
+end)
 
 function controller.run()
   dyna_controller.run()
