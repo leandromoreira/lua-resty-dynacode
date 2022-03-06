@@ -20,17 +20,17 @@ describe("cache", function()
 
   it("signalizes when cache is fresh", function()
     cache.set("a value")
-    local fresh = cache.should_refresh()
+    local should_refresh = cache.should_refresh()
 
-    assert.is_false(fresh)
+    assert.is_false(should_refresh)
   end)
 
   it("signalizes when cache is stale", function()
     cache.set("a value")
     ngx.sleep(cache.ttl + 1)
 
-    local fresh = cache.should_refresh()
+    local should_refresh = cache.should_refresh()
 
-    assert.is_true(fresh)
+    assert.is_true(should_refresh)
   end)
 end)
