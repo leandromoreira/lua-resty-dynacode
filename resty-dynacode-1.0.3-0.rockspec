@@ -1,8 +1,8 @@
 package = "resty-dynacode"
-version = "1.0.2-0"
+version = "1.0.3-0"
 source = {
-  url = "github.com/leandromoreira/lua-resty-dynacode",
-  tag = "1.0.2"
+  url = "git://github.com/leandromoreira/lua-resty-dynacode",
+  tag = "1.0.3"
 }
 description = {
   summary = "A resty Lua library to enable dynamic code deployment on nginx / openresty",
