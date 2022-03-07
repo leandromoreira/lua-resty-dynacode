@@ -15,7 +15,7 @@ describe("cache", function()
     cache.set("a value")
     local result = cache.get()
 
-    assert.are.same("a value", "a value")
+    assert.are.same(result, "a value")
   end)
 
   it("signalizes when cache is fresh", function()
