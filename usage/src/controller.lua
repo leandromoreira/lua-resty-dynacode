@@ -13,56 +13,60 @@ if not ok then
   ngx.log(ngx.ERR, string.format("error during the setup err=%s", setup_err))
 end
 
+function controller.logger(msg)
+  ngx.log(ngx.ERR, string.format("[controller worker_pid=%d phase=%s] %s", ngx.worker.pid(), ngx.get_phase(), msg))
+end
+
 dyna_controller.events.on(dyna_controller.events.BG_CACHE_HIT, function()
-  ngx.log(ngx.ERR, "cache hit")
+  controller.logger("cache hit")
 end)
 
 dyna_controller.events.on(dyna_controller.events.BG_CACHE_MISS, function()
-  ngx.log(ngx.ERR, "cache miss")
+  controller.logger("cache miss")
 end)
 
 dyna_controller.events.on(dyna_controller.events.BG_FETCH_API_SUCCESS, function()
-  ngx.log(ngx.ERR, "api success")
+  controller.logger("api success")
 end)
 
 dyna_controller.events.on(dyna_controller.events.BG_FETCH_API_STATUS_CODE_ERROR, function(status_code)
-  ngx.log(ngx.ERR, string.format("api <> 200 status=%d", status_code))
+  controller.logger(string.format("api <> 200 status=%d", status_code))
 end)
 
 dyna_controller.events.on(dyna_controller.events.BG_FETCH_API_GENERIC_ERROR, function(err)
-  ngx.log(ngx.ERR, string.format("api err=%s", err))
+  controller.logger(string.format("api err=%s", err))
 end)
 
 dyna_controller.events.on(dyna_controller.events.BG_COMPILE_SUCCESS, function(plugin)
-  ngx.log(ngx.ERR, string.format("compile success %s", plugin.name))
+  controller.logger(string.format("compile success %s", plugin.name))
 end)
 
 dyna_controller.events.on(dyna_controller.events.BG_COMPILE_ERROR, function(plugin, err)
-  ngx.log(ngx.ERR, string.format("compile error %s err=%s", plugin.name, err))
+  controller.logger(string.format("compile error %s err=%s", plugin.name, err))
 end)
 
 dyna_controller.events.on(dyna_controller.events.BG_UPDATED_PLUGINS, function()
-  ngx.log(ngx.ERR, "updated plugins with success")
+  controller.logger("updated plugins with success")
 end)
 
 dyna_controller.events.on(dyna_controller.events.BG_DIDNT_UPDATE_PLUGINS, function()
-  ngx.log(ngx.ERR, "didnt updated plugins with success")
+  controller.logger("didnt updated plugins with success")
 end)
 
 dyna_controller.events.on(dyna_controller.events.RT_PLUGINS_STARTING, function(plugin)
-  ngx.log(ngx.ERR, string.format("about to run %s", plugin.name))
+  controller.logger(string.format("about to run %s", plugin.name))
 end)
 
 dyna_controller.events.on(dyna_controller.events.RT_PLUGINS_DONE, function(plugin)
-  ngx.log(ngx.ERR, string.format("done running %s", plugin.name))
+  controller.logger(string.format("done running %s", plugin.name))
 end)
 
 dyna_controller.events.on(dyna_controller.events.RT_PLUGINS_ERROR, function(plugin, err)
-  ngx.log(ngx.ERR, string.format("error while running %s err=%s", plugin.name, err))
+  controller.logger(string.format("error while running %s err=%s", plugin.name, err))
 end)
 
 dyna_controller.events.on(dyna_controller.events.ON_ERROR, function(section, err)
-  ngx.log(ngx.ERR, string.format("error at %s err=%s", section, err))
+  controller.logger(string.format("error at %s err=%s", section, err))
 end)
 
 local metrics_ngx_shared = ngx.shared.metrics_dict

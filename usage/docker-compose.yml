@@ -1,0 +1,28 @@
+version: '2.1'
+
+services:
+  app:
+    build:
+      context: .
+    volumes:
+      - "./nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf"
+      - "./src/:/lua/src/"
+    ports:
+      - "5050:5050"
+      - "6060:6060"
+      - "7070:7070"
+      - "8080:8080"
+    links:
+      - api
+    depends_on:
+      - api
+
+  api:
+    build:
+      context: .
+    volumes:
+      - "./response.json:/api/response.json"
+      - "./api.conf:/usr/local/openresty/nginx/conf/nginx.conf"
+    ports:
+      - "9090:9090"
+
