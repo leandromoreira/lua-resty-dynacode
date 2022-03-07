@@ -17,4 +17,4 @@ jobs:
     - name: Build
       run: docker build . --file Dockerfile --tag lua-resty-dynacode:$(date +%s)
     - name: Lint
-      run: docker run -it -v $(pwd):/lua -w /lua lua-resty-dynacode:$(date +%s) ./resty_busted -c --shuffle
+      run: docker run --rm -v $(pwd):/lua -w /lua lua-resty-dynacode:$(date +%s) bash -c "./resty_busted -c --shuffle"
