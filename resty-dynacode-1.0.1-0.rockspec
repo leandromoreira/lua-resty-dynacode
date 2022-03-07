@@ -1,8 +1,8 @@
 package = "resty-dynacode"
-version = "1.0.1-0"
+version = "1.0.2-0"
 source = {
   url = "github.com/leandromoreira/lua-resty-dynacode",
-  tag = "1.0.1"
+  tag = "1.0.2"
 }
 description = {
   summary = "A resty Lua library to enable dynamic code deployment on nginx / openresty",
@@ -10,7 +10,7 @@ description = {
   license = "BSD 3-Clause"
 }
 dependencies = {
-  "lua-resty-http >= 5.1, < 5.2",
+  "lua-resty-http >= 0.16.1-0",
 }
 build = {
   type = "builtin",
