@@ -13,6 +13,33 @@ A library to provide dynamic (via JSON/API) load of lua code into your nginx/ope
   * select the applicable plugins (based on phase/applicability)
   * run them
 
+## Background 
+
+```mermaid
+graph LR
+    subgraph Nginx/Openresty Background
+        DynaCode -->|run each X seconds| Poller
+        Poller -->|already in cache| Cache[(Cache SHM)]
+        Poller -->|GET /plugins.json| Fetcher
+        Fetcher --> Cache
+        Cache --> Compiler[[Compiler]]
+        Compiler --> |share bytecode| LocalLuaVM([LocalLuaVM])
+    end
+```
+
+## Request
+
+```mermaid
+graph LR
+    subgraph Nginx/Openresty Request
+        Runner -->|library is| Enabled
+        Runner -->|host is not| Skippable
+        Runner -->|host matches| Regex
+        Runner -->|matches current| Phase
+        Runner -->|execute the function| LocalLuaVM([LocalLuaVM])
+    end
+```
+
 # Observability
 
 One [can use events](usage/src/controller.lua#L73) to expose metrics about the poller, fetche, caching, compiler, plugins, etc.
@@ -59,5 +86,5 @@ What happens when plugin API is offline? If the plugins are already in memory, t
 * ~~offer events callbacks (like: `on_compile_fail`, `on_success`, `...`)~~
   * maybe a vts plugin for metrics
 * tests
-* documentation / drawing / ~~use cases~~
-* build, ~~lint~~, tests
+* documentation / ~~drawing~~ / ~~use cases~~
+* build, ~~lint~~
