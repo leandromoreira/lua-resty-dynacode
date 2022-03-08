@@ -6,4 +6,4 @@ RUN apt-get update \
     && mkdir /src \
     && cd /src \
     && git config --global url."https://".insteadOf git:// \
-    && luarocks install resty-dynacode 1.0.3-0
+    && luarocks install resty-dynacode 1.0.4-0
