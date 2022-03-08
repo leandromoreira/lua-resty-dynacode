@@ -2,16 +2,20 @@
 
 A library to provide dynamic (via JSON/API) load of lua code into your nginx/openresty.
 
+# Example
+
+You can find a complete example at [`usage`](/usage) folder.
+
 # How
 
 * in the background:
-  * start a poller
-  * fetch the JSON API response and save it to a **shared memory**
-  * compile (`loadstring`) the lua code and share it through **each worker**
+  * start a [poller](/src/resty/dynacode/poller.lua#L44)
+  * fetch the [JSON API response](/usage/response.json) and save it to a [**shared memory**](/src/resty/dynacode/cache.lua#L43)
+  * compile (`loadstring`) the lua code and share it through [**each worker**](/src/resty/dynacode/controller.lua#L157)
 * at the runtime (request cycle):
-  * select the proper domain (applying regex against current host)
+  * select the proper domain (applying [regex against current host](/src/resty/dynacode/runner.lua#L57))
   * select the applicable plugins (based on phase/applicability)
-  * run them
+  * [run them](/src/resty/dynacode/runner.lua#L72)
 
 ## Background 
 
