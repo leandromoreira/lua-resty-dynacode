@@ -154,7 +154,7 @@ function controller._recurrent_function()
 
   -- TODO: validate plugins minimal expected structure to not override current with invalid api response
   -- saving/updating the copy locally per worker
-  controller.plugins = table_response
+  controller.plugins = runner.phasify_plugins(table_response)
   controller.events.emit(controller.events.BG_UPDATED_PLUGINS)
 end
 
@@ -179,7 +179,7 @@ function controller._run()
     return
   end
 
-  runner.run(controller.plugins)
+  runner.run(controller.plugins, ngx.var.host, ngx.get_phase())
 end
 
 return controller
