@@ -13,9 +13,9 @@ You can find a complete example at [`usage`](/usage) folder.
   * fetch the [JSON API response](/usage/response.json) and save it to a [**shared memory**](/src/resty/dynacode/cache.lua#L43)
   * compile (`loadstring`) the lua code and share it through [**each worker**](/src/resty/dynacode/controller.lua#L157)
 * at the runtime (request cycle):
-  * select the proper domain (applying [regex against current host](/src/resty/dynacode/runner.lua#L57))
+  * select the proper domain (applying [regex against current host](/src/resty/dynacode/runner.lua#L81))
   * select the applicable plugins (based on phase/applicability)
-  * [run them](/src/resty/dynacode/runner.lua#L72)
+  * [run them](/src/resty/dynacode/runner.lua#L95)
 
 ## Background 
 
