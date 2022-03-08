@@ -1,28 +1,28 @@
 # Lua Resty Dynacode
 
-A library to provide dynamic (via json/API) load of lua code into your nginx/openresty.
+A library to provide dynamic (via JSON/API) load of lua code into your nginx/openresty.
 
 # How
 
-* in background
+* in the background:
   * start a poller
-  * fetch a json api text response and save it to a shared memory
-  * compile (`loadstring`) the lua code and share it through *each worker*
-* at runtime
-  * select the proper domain
-  * select the applicable plugins
+  * fetch the JSON API response and save it to a **shared memory**
+  * compile (`loadstring`) the lua code and share it through **each worker**
+* at the runtime (request cycle):
+  * select the proper domain (applying regex against current host)
+  * select the applicable plugins (based on phase/applicability)
   * run them
 
 # Observability
 
-One [can use the events](usage/src/controller.lua#L73) to expose metrics about the poller, compiler, plugins, and etc.
+One [can use events](usage/src/controller.lua#L73) to expose metrics about the poller, fetche, caching, compiler, plugins, etc.
 
 ## Motivation
 
-Do what we already do with Lua but without SIGHUP or deployment, it was [inspired by a prev hackathon](https://github.com/leandromoreira/edge-computing-resty#demo). Things you might want to do:
+Do what we already do with Lua, but without SIGHUP or deployment, it was [inspired by a previous hackathon](https://github.com/leandromoreira/edge-computing-resty#demo). Things this library enables you to do:
 
 * Debug (log/metrify specific IP/token/user agent/cookie)
-* Quick maneuver
+* Quick maneuvers:
   * Block IP
   * Deny requests per path/user agent/etc
   * Drain a single server (302) / health check
@@ -37,34 +37,27 @@ Do what we already do with Lua but without SIGHUP or deployment, it was [inspire
 
 ## Warning
 
-Although this library was made to support most type of failures through `pcall`, fallbacks, reasonable defaults. You can't forget a developer is still writting code.
+Although this library was made to support the most failures types through `pcall`, fallbacks, sensible defaults. You can't forget that a developer is still writing the code.
 
-The following code will keep all your nginx workers busy forever, effectively making it unreachable.
+The following code will keep all nginx workers busy forever, effectively making it unreachable.
 
 ```lua
 while true do print('The bullets, Just stop your crying') end
 ```
 
-While one could try to solve that with [quotas. Luajit doens't allow us to do that](https://github.com/Kong/kong-lua-sandbox).
+While one could try to solve that with [quotas, but Luajit doesn't allow us to do that](https://github.com/Kong/kong-lua-sandbox).
 
-What happens when plugin API is offline? If the plugins are already in memory that's fine. But when nginx was restarted/reloaded, it's going to lose all the cached data.
+What happens when plugin API is offline? If the plugins are already in memory, that's fine. But when nginx was restarted/reloaded, it's going to lose all the cached data.
 
-## Poll the API for new plugins or updates
-
-![Poll the API for new plugins or updates](/img/background_task.png "Poll the API for new plugins or updates")
-
-## Run the compiled/cached plugins at request time
-
-![Run the compiled/cached plugins at request time](/img/runtime_task.png "Run the compiled/cached plugins at request time")
 
 # Road map
 
-* publish a rock
+* ~~publish a rock~~
 * off-line mode (saving a local api response for -HUP/restart without link to API)
 * use / provide function direct access / local function instead of tables (`ngx_now`, `tbl.logger`)
 * discuss the json format (making phases accessible without iterating through all plugins)
-* offer events callbacks (like: `on_compile_fail`, `on_success`, `...`)
+* ~~offer events callbacks (like: `on_compile_fail`, `on_success`, `...`)~~
   * maybe a vts plugin for metrics
 * tests
-* documentation / drawing / use cases (see: `ldoc_example.lua`)
-* build, lint, tests
+* documentation / drawing / ~~use cases~~
+* build, ~~lint~~, tests
