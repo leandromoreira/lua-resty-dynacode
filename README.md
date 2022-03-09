@@ -4,15 +4,76 @@ A library to provide dynamic (via JSON/API) load of lua code into your nginx/ope
 
 # Example
 
-You can find a complete example at [`usage`](/usage) folder.
+You can find a complete example at [`usage`](/usage) folder. The steps to use the library are:
 
-# How
+Install the library `luarocks install resty-dynacode`
 
-* in the background:
+Create a lua module to import and configure the library.
+
+```lua
+local dyna_controller = require "resty.dynacode.controller"
+local controller = {} -- your module
+
+dyna_controller.setup({
+  plugin_api_uri = "http://api:9090/response.json", -- the API providing the expected response
+  plugin_api_polling_interval = 15,
+  plugin_api_poll_at_init = true,
+  workers_max_jitter = 5,
+  shm = "cache_dict",
+})
+
+function controller.run()
+  dyna_controller.run()
+end
+
+return controller
+```
+
+And finally hooking up the phases at the nginx conf.
+
+```nginx
+http {
+  # you must provide a shared memory space for caching
+  lua_shared_dict cache_dict 1m;
+  # spawning the pollers
+  init_worker_by_lua_block   { require("controller").run() }
+  # hooking up all the phases (on http context)
+  rewrite_by_lua_block       { require("controller").run() }
+  access_by_lua_block        { require("controller").run() }
+  header_filter_by_lua_block { require("controller").run() }
+  body_filter_by_lua_block   { require("controller").run() }
+  log_by_lua_block           { require("controller").run() }
+
+  # the servers we want to add lua code
+  server {
+    listen 7070;
+    server_name  gateway.local.com;
+
+    location / {
+      proxy_pass http://$gateway_upstream;
+    }
+  }
+
+  server {
+    listen 8080;
+    server_name  webp.local.com;
+
+    location / {
+      content_by_lua_block { require("controller").run() }
+    }
+  }
+
+}
+```
+
+
+# How it works
+
+* in the **background**:
   * start a [poller](/src/resty/dynacode/poller.lua#L44)
   * fetch the [JSON API response](/usage/response.json) and save it to a [**shared memory**](/src/resty/dynacode/cache.lua#L43)
   * compile (`loadstring`) the lua code and share it through [**each worker**](/src/resty/dynacode/controller.lua#L157)
-* at the runtime (request cycle):
+* at the **runtime (request cycle)**:
   * select the proper domain (applying [regex against current host](/src/resty/dynacode/runner.lua#L81))
   * select the applicable plugins (based on phase/applicability)
   * [run them](/src/resty/dynacode/runner.lua#L95)
@@ -46,7 +107,7 @@ graph LR
 
 # Observability
 
-One [can use events](usage/src/controller.lua#L73) to expose metrics about the poller, fetche, caching, compiler, plugins, etc.
+One [can use events](usage/src/controller.lua#L73) to expose metrics about the poller, fetcher, caching, compiler, plugins, etc.
 
 ## Motivation
 
