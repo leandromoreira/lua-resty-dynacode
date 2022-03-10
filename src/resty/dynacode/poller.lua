@@ -1,7 +1,9 @@
+--- Provide the basic setup for calling a function in a given interval.
+-- It uses the [`ngx.time.every`](https://github.com/openresty/lua-nginx-module#ngxtimerevery).
+local spawn = {}
+
 local validator = require "resty.dynacode.validator"
 local opts = require "resty.dynacode.opts"
-
-local spawn = {}
 
 spawn.interval = nil
 spawn.workers_max_jitter = nil
@@ -16,6 +18,13 @@ spawn.validation_rules = {
 
 function spawn.logger(msg) print(msg) end
 
+--- Setup function.
+-- @param opt options to configure the poller
+-- @param opt.interval number - the interval in between recurring function calls.
+-- @param opt.callback function - the function that will be called "in background"
+-- @param opt.workers_max_jitter number - the number of seconds to add jitter among all the nginx workers
+-- @return bool - status - if it's a success or not
+-- @return string - when there's an error this is the error message
 function spawn.setup(opt)
   local ok, err = validator.valid(spawn.validation_rules, opt)
   if not ok then
