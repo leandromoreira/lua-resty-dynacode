@@ -1,7 +1,10 @@
+--- Provide a caching mechanism for the plugins API response.
+-- It uses the [`nginx shared memory`](https://github.com/openresty/lua-nginx-module#ngxshareddict) as the backend storage.
+-- It is shared among all the workers.
+local cache = {}
+
 local validator = require "resty.dynacode.validator"
 local opts = require "resty.dynacode.opts"
-
-local cache = {}
 
 cache.key_name = "dynacode_key"
 cache.ttl_name = "dynacode_updated_at"
@@ -15,6 +18,12 @@ cache.validation_rules = {
   validator.present_table("ngx_shared"),
 }
 
+--- Setup function.
+-- @param opt options to configure the caching
+-- @param opt.now function - a function that returns epoch now.
+-- @param opt.ttl number - after the ttl the cache should be refreshed
+-- @return bool - status - if it's a success or not
+-- @return string - when there's an error this is the error message
 function cache.setup(opt)
   local ok, err = validator.valid(cache.validation_rules, opt)
   if not ok then

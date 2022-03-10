@@ -6,7 +6,7 @@ cache.setup({
     ngx_shared = ngx.shared.test_shm, -- this shared memory is applied at resty_busted
 })
 
-describe("cache", function()
+describe("cache #unit", function()
   before_each(function()
     ngx.shared.test_shm:flush_all()
   end)

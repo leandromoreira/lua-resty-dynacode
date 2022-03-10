@@ -32,7 +32,7 @@ local original_plugins = {
   },
 }
 
-describe("runner", function()
+describe("runner #unit", function()
   describe("#run", function()
     before_each(function()
       plugins = helper.deepcopy(original_plugins)
