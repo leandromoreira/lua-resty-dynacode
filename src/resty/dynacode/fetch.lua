@@ -1,8 +1,10 @@
+--- An http client.
+local fetch = {}
+
 local http = require "resty.http"
 local opts = require("resty.dynacode.opts")
 local validator = require "resty.dynacode.validator"
 
-local fetch = {}
 local MS = 1000 -- ms to convert seconds
 
 fetch.plugin_api_uri = nil
@@ -26,6 +28,9 @@ function fetch.setup(opt)
   return true, nil
 end
 
+--- Requesting HTTP function.
+-- @return bool - status - if it's a success or not
+-- @return string - when there's an error this is the error message
 function fetch.request_api()
   local httpc = http.new()
   httpc:set_timeout(fetch.plugin_api_timeout * MS)

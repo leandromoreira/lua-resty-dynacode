@@ -1,7 +1,9 @@
+--- Provide the compiling capabilities.
+-- It uses the Lua's [`loadstring`](https://www.lua.org/pil/8.html).
+local compiler = {}
+
 local validator = require "resty.dynacode.validator"
 local opts = require "resty.dynacode.opts"
-
-local compiler = {}
 
 compiler.events = nil
 
@@ -20,12 +22,24 @@ function compiler.setup(opt)
   return true, nil
 end
 
+local function compiler_loadstring(str_code)
+  local api_fun, err = loadstring("return function() " .. str_code .. " end")
+  if api_fun then
+    return api_fun(), nil
+  else
+    return nil, err
+  end
+end
+
+--- Compiler function.
+-- @param api_response table the api response in lua table format
+-- @return [error] - the compilation error list
 function compiler.compile(api_response)
   local errors = {}
 
   for _, domain in ipairs(api_response.domains) do
     for _, plugin in ipairs(domain.plugins) do
-      local compiled_fun, err = compiler.loadstring(plugin.code)
+      local compiled_fun, err = compiler_loadstring(plugin.code)
 
       if not compiled_fun then
         plugin.skip = true -- avoid runnning it
@@ -41,16 +55,6 @@ function compiler.compile(api_response)
   end
 
   return errors
-end
-
-function compiler.loadstring(str_code)
-  -- API wrapper
-  local api_fun, err = loadstring("return function() " .. str_code .. " end")
-  if api_fun then
-    return api_fun(), nil
-  else
-    return nil, err
-  end
 end
 
 return compiler

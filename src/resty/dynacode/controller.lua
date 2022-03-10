@@ -1,3 +1,6 @@
+--- The controller where all the required components are linked to enable the library.
+local controller = {}
+
 local poller = require("resty.dynacode.poller")
 local fetcher = require("resty.dynacode.fetch")
 local compiler = require("resty.dynacode.compiler")
@@ -7,8 +10,6 @@ local validator = require("resty.dynacode.validator")
 local cache = require("resty.dynacode.cache")
 local event_emitter = require("resty.dynacode.event_emitter")
 local json = require("cjson.safe")
-
-local controller = {}
 
 controller.workers_max_jitter = 0
 controller.plugin_api_poll_at_init = false
@@ -107,7 +108,6 @@ function controller.setup(opt)
   return true
 end
 
-
 function controller.recurrent_function()
   local ok, err = pcall(controller._recurrent_function)
 
@@ -158,6 +158,8 @@ function controller._recurrent_function()
   controller.events.emit(controller.events.BG_UPDATED_PLUGINS)
 end
 
+--- It runs the proper task, if it's the init_phase it's going to fire the pollers
+-- if it's other phases it's going to select the proper plugins and run them.
 function controller.run()
   local ok, err = pcall(controller._run)
   if not ok then

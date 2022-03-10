@@ -38,7 +38,7 @@
 
 <h2>Modules</h2>
 <ul class="nowrap">
-  <li><strong>resty.dynacode.cache</strong></li>
+  <li><a href="../modules/resty.dynacode.cache.html">resty.dynacode.cache</a></li>
   <li><a href="../modules/resty.dynacode.compiler.html">resty.dynacode.compiler</a></li>
   <li><a href="../modules/resty.dynacode.controller.html">resty.dynacode.controller</a></li>
   <li><a href="../modules/resty.dynacode.event_emitter.html">resty.dynacode.event_emitter</a></li>
@@ -46,36 +46,25 @@
   <li><a href="../modules/resty.dynacode.opts.html">resty.dynacode.opts</a></li>
   <li><a href="../modules/resty.dynacode.poller.html">resty.dynacode.poller</a></li>
   <li><a href="../modules/resty.dynacode.runner.html">resty.dynacode.runner</a></li>
-  <li><a href="../modules/resty.dynacode.validator.html">resty.dynacode.validator</a></li>
+  <li><strong>resty.dynacode.validator</strong></li>
 </ul>
 
 </div>
 
 <div id="content">
 
-<h1>Module <code>resty.dynacode.cache</code></h1>
-<p>Provide a caching mechanism for the plugins API response.</p>
-<p> It uses the <a href="https://github.com/openresty/lua-nginx-module#ngxshareddict"><code>nginx shared memory</code></a> as the backend storage.
- It is shared among all the workers.</p>
+<h1>Module <code>resty.dynacode.validator</code></h1>
+<p>Provide a mini validation library based on lua type and presence.</p>
+<p>
+
+</p>
 
 
 <h2><a href="#Functions">Functions</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#setup">setup (opt)</a></td>
-	<td class="summary">Setup function.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#should_refresh">should_refresh ()</a></td>
-	<td class="summary">Should fresh.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#get">get ()</a></td>
-	<td class="summary">Cache get.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#set">set (string)</a></td>
-	<td class="summary">Cache set.</td>
+	<td class="name" nowrap><a href="#valid">valid (rules, tbl)</a></td>
+	<td class="summary">Validation function.</td>
 	</tr>
 </table>
 
@@ -87,24 +76,21 @@
 
     <dl class="function">
     <dt>
-    <a name = "setup"></a>
-    <strong>setup (opt)</strong>
+    <a name = "valid"></a>
+    <strong>valid (rules, tbl)</strong>
     </dt>
     <dd>
-    Setup function.
+    Validation function.
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">opt</span> options to configure the caching
-        <ul>
-        <li><span class="parameter">now</span>
-         function - a function that returns epoch now.
+        <li><span class="parameter">rules</span>
+         table - the rules to apply
         </li>
-        <li><span class="parameter">ttl</span>
-         number - after the ttl the cache should be refreshed
+        <li><span class="parameter">tbl</span>
+         table - the table to be validated
         </li>
-        </li></ul>
     </ul>
 
     <h3>Returns:</h3>
@@ -114,67 +100,6 @@
         <li>
         string - when there's an error this is the error message</li>
     </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "should_refresh"></a>
-    <strong>should_refresh ()</strong>
-    </dt>
-    <dd>
-    Should fresh.
- it returns whether the client should refill the cache or not.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-        bool - status - if it's a success or not
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "get"></a>
-    <strong>get ()</strong>
-    </dt>
-    <dd>
-    Cache get.
- it returns the cache value.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-        string - api response
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "set"></a>
-    <strong>set (string)</strong>
-    </dt>
-    <dd>
-    Cache set.
- it sets the cache value.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">string</span>
-         value
-        </li>
-    </ul>
-
 
 
 

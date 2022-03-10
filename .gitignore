@@ -13,6 +13,9 @@ luac.out
 *.obj
 *.elf
 
+#VSCode
+.vscode/
+
 # Precompiled Headers
 *.gch
 *.pch

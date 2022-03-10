@@ -40,11 +40,11 @@
 <ul class="nowrap">
   <li><a href="../modules/resty.dynacode.cache.html">resty.dynacode.cache</a></li>
   <li><a href="../modules/resty.dynacode.compiler.html">resty.dynacode.compiler</a></li>
-  <li><a href="../modules/resty.dynacode.controller.html">resty.dynacode.controller</a></li>
+  <li><strong>resty.dynacode.controller</strong></li>
   <li><a href="../modules/resty.dynacode.event_emitter.html">resty.dynacode.event_emitter</a></li>
   <li><a href="../modules/resty.dynacode.fetch.html">resty.dynacode.fetch</a></li>
   <li><a href="../modules/resty.dynacode.opts.html">resty.dynacode.opts</a></li>
-  <li><strong>resty.dynacode.poller</strong></li>
+  <li><a href="../modules/resty.dynacode.poller.html">resty.dynacode.poller</a></li>
   <li><a href="../modules/resty.dynacode.runner.html">resty.dynacode.runner</a></li>
   <li><a href="../modules/resty.dynacode.validator.html">resty.dynacode.validator</a></li>
 </ul>
@@ -53,16 +53,19 @@
 
 <div id="content">
 
-<h1>Module <code>resty.dynacode.poller</code></h1>
-<p>Provide the basic setup for calling a function in a given interval.</p>
-<p> It uses the <a href="https://github.com/openresty/lua-nginx-module#ngxtimerevery"><code>ngx.time.every</code></a>.</p>
+<h1>Module <code>resty.dynacode.controller</code></h1>
+<p>The controller where all the required components are linked to enable the library.</p>
+<p>
+
+</p>
 
 
 <h2><a href="#Functions">Functions</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#spawn.setup">spawn.setup (opt)</a></td>
-	<td class="summary">Setup function.</td>
+	<td class="name" nowrap><a href="#run">run ()</a></td>
+	<td class="summary">It runs the proper task, if it's the init_phase it's going to fire the pollers
+ if it's other phases it's going to select the proper plugins and run them.</td>
 	</tr>
 </table>
 
@@ -74,36 +77,15 @@
 
     <dl class="function">
     <dt>
-    <a name = "spawn.setup"></a>
-    <strong>spawn.setup (opt)</strong>
+    <a name = "run"></a>
+    <strong>run ()</strong>
     </dt>
     <dd>
-    Setup function.
+    It runs the proper task, if it's the init_phase it's going to fire the pollers
+ if it's other phases it's going to select the proper plugins and run them.
 
 
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">opt</span> options to configure the poller
-        <ul>
-        <li><span class="parameter">interval</span>
-         number - the interval in between recurring function calls.
-        </li>
-        <li><span class="parameter">callback</span>
-         function - the function that will be called "in background"
-        </li>
-        <li><span class="parameter">workers_max_jitter</span>
-         number - the number of seconds to add jitter among all the nginx workers
-        </li>
-        </li></ul>
-    </ul>
 
-    <h3>Returns:</h3>
-    <ol>
-        <li>
-        bool - status - if it's a success or not</li>
-        <li>
-        string - when there's an error this is the error message</li>
-    </ol>
 
 
 

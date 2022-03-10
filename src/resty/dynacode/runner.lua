@@ -1,7 +1,8 @@
+--- The plugin runner, it hooks to nginx phases and do filtering (based on regex) and do a procted call to the plugins.
+local runner = {}
+
 local validator = require "resty.dynacode.validator"
 local opts = require "resty.dynacode.opts"
-
-local runner = {}
 
 runner.logger = function(msg) print(msg) end
 runner.regex_options = "o"
@@ -48,6 +49,12 @@ function runner.phasify_plugins(plugins)
   return plugins
 end
 
+--- Runner main function.
+-- @param plugins table - the plugins scheme to run
+-- @param host string - the current host
+-- @param curren_phase string - the current phase
+-- @return bool - status - if it's a success or not
+-- @return string - when there's an error this is the error message
 function runner.run(plugins, host, current_phase)
   if plugins == nil then
     runner.logger("the plugins are not loaded yet")

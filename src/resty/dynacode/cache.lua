@@ -10,7 +10,7 @@ cache.key_name = "dynacode_key"
 cache.ttl_name = "dynacode_updated_at"
 cache.now = nil
 cache.ttl = nil
-cache.logger = function(msg) print(msg) end
+function cache.logger(msg) print(msg) end
 
 cache.validation_rules = {
   validator.present_function("now"),
@@ -35,6 +35,9 @@ function cache.setup(opt)
   return true, nil
 end
 
+--- Should fresh.
+-- it returns whether the client should refill the cache or not.
+-- @return bool - status - if it's a success or not
 function cache.should_refresh()
   local value, _ = cache.ngx_shared:get(cache.ttl_name)
 
@@ -44,11 +47,17 @@ function cache.should_refresh()
   return false
 end
 
+--- Cache get.
+-- it returns the cache value.
+-- @return string - api response
 function cache.get()
   local value, _ = cache.ngx_shared:get(cache.key_name)
   return value
 end
 
+--- Cache set.
+-- it sets the cache value.
+-- @param string value
 function cache.set(value)
   if value == nil or value == "" or type(value) ~= "string" then
     cache.logger("the value is invalid (either nil or empty or not a string)")
