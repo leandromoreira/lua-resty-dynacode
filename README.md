@@ -1,10 +1,10 @@
 # Lua Resty Dynacode
 
-A library to provide dynamic (via JSON/API) load of lua code into your nginx/openresty.
+A library to provide dynamic (via JSON/API) load of lua code into the nginx/openresty.
 
 # Example
 
-You can find a complete example at [`usage`](/usage) folder. The steps to use the library are:
+You can find a complete example in the [`usage`](/usage) folder. The following steps will guide the basic usage:
 
 Install the library `luarocks install resty-dynacode`
 
@@ -146,10 +146,10 @@ What happens when plugin API is offline? If the plugins are already in memory, t
 
 * ~~publish a rock~~
 * off-line mode (saving a local api response for -HUP/restart without link to API)
-* use / provide function direct access / local function instead of tables (`ngx_now`, `tbl.logger`)
-* discuss the json format (making phases accessible without iterating through all plugins)
+* ~~use / provide function direct access / local function instead of tables (`ngx_now`, `tbl.logger`)~~
+* ~~discuss the json format (making phases accessible without iterating through all plugins)~~
 * ~~offer events callbacks (like: `on_compile_fail`, `on_success`, `...`)~~
   * maybe a vts plugin for metrics
-* tests
-* documentation / ~~drawing~~ / ~~use cases~~
+* ~~tests~~
+* ~~documentation~~ / ~~drawing~~ / ~~use cases~~
 * build, ~~lint~~
