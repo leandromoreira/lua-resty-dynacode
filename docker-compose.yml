@@ -18,6 +18,11 @@ services:
     extends:
       service: base
 
+  prove_test:
+    command: bash -c "whoami && groups root && ls -lah /lua/t/ && ls -lah /lua/t/servroot/ && prove -r t"
+    extends:
+      service: base
+
   doc:
     command: ldoc -f markdown src -d docs
     extends:

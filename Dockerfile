@@ -2,7 +2,8 @@ FROM openresty/openresty:xenial
 
 RUN apt-get update \
     && apt-get install -y \
-       git \
+        make cpanminus git \
+    && cpanm -n Test::Nginx \
     && mkdir /src \
     && cd /src \
     && git config --global url."https://".insteadOf git:// \

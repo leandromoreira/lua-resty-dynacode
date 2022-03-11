@@ -42,3 +42,5 @@ luac.out
 *.x86_64
 *.hex
 
+# perl/nginx runtime test files
+t/servroot
