@@ -4,9 +4,26 @@ A library to provide dynamic (via JSON/API) load of lua code into the nginx/open
 
 # How
 
-You create a CMS where you register plugins. A plugin belongs to a **server** (`*`, regex, etc), it has an **nginx phase** (access, rewrite, log, etc), and the **lua code** it represents. Your CMS then must expose these plugins in [a known structure](/usage/response.json).
+You create a CMS where you register plugins. A plugin belongs to a **server/domain** (`*`, regex, etc), it has an **nginx phase** (access, rewrite, log, etc), and the **lua code** it represents. Your CMS then must expose these plugins in [a known structure](/usage/response.json).
 
-Once a JSON API is running, your openresty/nginx will fetch regularly the plugins (**in the background**), compile them, and save them to cache. A user issues a request then the runner will see if the current context (server name, phase, etc.) matches with the plugin requirements, and run it.
+```yaml
+domains:
+  - name: "webp.local.com"
+    plugins:
+      - name: Only_Webp
+        code: "if not ngx.re.find(ngx.var.uri, '\\\\.webp$') then ngx.exit(ngx.HTTP_NOT_FOUND) end"
+        phase: access
+      - name: Create_Webp
+        code: "ngx.say('this is a webp file, believe')"
+        phase: content
+  - name: "gateway.local.com"
+    plugins:
+      - name: Authorized
+        code: "if ngx.var.arg_token ~= '0xcafe' then ngx.exit(ngx.HTTP_UNAUTHORIZED) end"
+        phase: access
+```
+
+Once a JSON API is running, the openresty/nginx will `fetch` regularly the plugins (**in the background**), `compile` them, and save them to cache. A user issues a request then the `runner` will see if the current context (server name, phase, etc.) matches with the plugin requirements, and run it.
 
 # Motivation
 
