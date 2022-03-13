@@ -2,6 +2,30 @@
 
 A library to provide dynamic (via JSON/API) load of lua code into the nginx/openresty.
 
+# How
+
+You create a CMS where you register plugins. A plugin belongs to a **server** (`*`, regex, etc), it has an **nginx phase** (access, rewrite, log, etc), and the **lua code** it represents. Your CMS then must expose these plugins in [a known structure](/usage/response.json).
+
+Once a JSON API is running, your openresty/nginx will fetch regularly the plugins (**in the background**), compile them, and save them to cache. A user issues a request then the runner will see if the current context (server name, phase, etc.) matches with the plugin requirements, and run it.
+
+# Motivation
+
+Do what we already do with Lua, but without SIGHUP or deployment, it was [inspired by a previous hackathon](https://github.com/leandromoreira/edge-computing-resty#demo). Things this library enables you to do:
+
+* Debug (log/metrify specific IP/token/user agent/cookie)
+* Quick maneuvers:
+  * Block IP
+  * Deny requests per path/user agent/etc
+  * Drain a single server (302) / health check
+  * Turn on/off modules/variables
+  * ...
+* Chaos testing
+* Change any variables
+* Change response body
+* Add response header (CORs, SCP, HSTS, X-Frame-Options,
+ ...)
+* Really anything you can do with lua/openresty
+
 # Example
 
 You can find a complete example in the [`usage`](/usage) folder. The following steps will guide the basic usage:
@@ -109,25 +133,8 @@ graph LR
 
 One [can use events](usage/src/controller.lua#L73) to expose metrics about the poller, fetcher, caching, compiler, plugins, etc.
 
-## Motivation
 
-Do what we already do with Lua, but without SIGHUP or deployment, it was [inspired by a previous hackathon](https://github.com/leandromoreira/edge-computing-resty#demo). Things this library enables you to do:
-
-* Debug (log/metrify specific IP/token/user agent/cookie)
-* Quick maneuvers:
-  * Block IP
-  * Deny requests per path/user agent/etc
-  * Drain a single server (302) / health check
-  * Turn on/off modules/variables
-  * ...
-* Chaos testing
-* Change any variables
-* Change response body
-* Add response header (CORs, SCP, HSTS, X-Frame-Options,
- ...)
-* Really anything you can do with lua/openresty
-
-## Warning
+# Warning
 
 Although this library was made to support the most failures types through `pcall`, fallbacks, sensible defaults. You can't forget that a developer is still writing the code.
 
