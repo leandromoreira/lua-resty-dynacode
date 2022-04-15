@@ -1,10 +1,10 @@
 # Lua Resty Dynacode
 
-A library to provide dynamic (via JSON/API) load of lua code into the nginx/openresty.
+An openresty library provigin dynamic (via JSON/API) load of lua code into the nginx/openresty.
 
 # How
 
-You create a CMS where you register plugins. A plugin belongs to a **server/domain** (`*`, regex, etc), it has an **nginx phase** (access, rewrite, log, etc), and the **lua code** it represents. Your CMS then must expose these plugins in [a known structure](/usage/response.json).
+You create a CMS where you register **plugins**. A plugin belongs to a **server/domain** (`*`, regex, etc), it has an **nginx phase** (access, rewrite, log, etc), and the **lua code** it represents. Your CMS then must expose these plugins in [a known API/structure](/usage/response.json).
 
 ```yaml
 domains:
@@ -23,11 +23,11 @@ domains:
         phase: access
 ```
 
-Once a JSON API is running, the openresty/nginx will `fetch` regularly the plugins (**in the background**), `compile` them, and save them to cache. A user issues a request then the `runner` will see if the current context (server name, phase, etc.) matches with the plugin requirements, and run it.
+Once a JSON API is running, the openresty/nginx will `fetch` regularly the plugins (**in background**), `compile` them, and save them to cache. When a regular user issues a request then the `runner` will see if the current context (server name, phase, etc.) matches with the **plugin spec/requirements**, and run it.
 
 # Motivation
 
-Do what we already do with Lua, but without SIGHUP or deployment, it was [inspired by a previous hackathon](https://github.com/leandromoreira/edge-computing-resty#demo). Things this library enables you to do:
+Do what we already do with Lua, but without SIGHUP or deployment. It was [inspired by a previous hackathon](https://github.com/leandromoreira/edge-computing-resty#demo). Things this library enables you to do:
 
 * Debug (log/metrify specific IP/token/user agent/cookie)
 * Quick maneuvers:
@@ -38,14 +38,14 @@ Do what we already do with Lua, but without SIGHUP or deployment, it was [inspir
   * ...
 * Chaos testing
 * Change any variables
-* Change response body
+* Modify response body
 * Add response header (CORs, SCP, HSTS, X-Frame-Options,
  ...)
 * Really anything you can do with lua/openresty
 
-# Example
+# Example (Quick Start)
 
-You can find a complete example in the [`usage`](/usage) folder. The following steps will guide the basic usage:
+You can find a complete example in the [`usage`](/usage) folder. The following steps will guide you through the basic usage:
 
 Install the library `luarocks install resty-dynacode`
 
@@ -111,13 +111,13 @@ http {
 # How it works
 
 * in the **background**:
-  * start a [poller](/src/resty/dynacode/poller.lua#L44)
-  * fetch the [JSON API response](/usage/response.json) and save it to a [**shared memory**](/src/resty/dynacode/cache.lua#L43)
+  * start a [poller](/src/resty/dynacode/poller.lua#L40)
+  * fetch the [JSON API response](/usage/response.json) and save it to a [**shared memory**](/src/resty/dynacode/cache.lua#L67)
   * compile (`loadstring`) the lua code and share it through [**each worker**](/src/resty/dynacode/controller.lua#L157)
 * at the **runtime (request cycle)**:
-  * select the proper domain (applying [regex against current host](/src/resty/dynacode/runner.lua#L81))
+  * select the proper domain (applying [regex against current host](/src/resty/dynacode/runner.lua#L88))
   * select the applicable plugins (based on phase/applicability)
-  * [run them](/src/resty/dynacode/runner.lua#L95)
+  * [run them](/src/resty/dynacode/runner.lua#L102)
 
 ## Background 
 
@@ -148,12 +148,12 @@ graph LR
 
 # Observability
 
-One [can use events](usage/src/controller.lua#L73) to expose metrics about the poller, fetcher, caching, compiler, plugins, etc.
+One [can use events](usage/src/controller.lua#L73) to expose metrics about the: `poller`, `fetcher`, `caching`, `compiler`, `runner`, and etc.
 
 
 # Warning
 
-Although this library was made to support the most failures types through `pcall`, fallbacks, sensible defaults. You can't forget that a developer is still writing the code.
+Although this library was made to support most of the failures types through `pcall`, `fallbacks`, and `sensible defaults` you can't forget that a developer is still writing the code.
 
 The following code will keep all nginx workers busy forever, effectively making it unreachable.
 
@@ -161,9 +161,9 @@ The following code will keep all nginx workers busy forever, effectively making 
 while true do print('The bullets, Just stop your crying') end
 ```
 
-While one could try to solve that with [quotas, but Luajit doesn't allow us to do that](https://github.com/Kong/kong-lua-sandbox).
+While one could try to solve that with [quotas, but Luajit doesn't allow us to use that](https://github.com/Kong/kong-lua-sandbox).
 
-What happens when plugin API is offline? If the plugins are already in memory, that's fine. But when nginx was restarted/reloaded, it's going to lose all the cached data.
+What happens when plugin API is offline? If the plugins are already in memory, that's fine. But when nginx was restarted/reloaded, it's going to `"lose"` all the cached data.
 
 
 # Road map
