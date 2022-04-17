@@ -1,6 +1,6 @@
 # Lua Resty Dynacode
 
-An openresty library provigin dynamic (via JSON/API) load of lua code into the nginx/openresty.
+An openresty library provisioning dynamic (via JSON/API) load of lua code into the nginx/openresty.
 
 # How
 
