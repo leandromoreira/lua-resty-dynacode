@@ -161,7 +161,7 @@ The following code will keep all nginx workers busy forever, effectively making 
 while true do print('The bullets, Just stop your crying') end
 ```
 
-While one could try to solve that with [quotas, but Luajit doesn't allow us to use that](https://github.com/Kong/kong-lua-sandbox).
+While one could try to solve that with [quotas, but Luajit doesn't allow us to use that](https://github.com/Kong/kong-lua-sandbox#optionsquota).
 
 What happens when plugin API is offline? If the plugins are already in memory, that's fine. But when nginx was restarted/reloaded, it's going to `"lose"` all the cached data.
 
