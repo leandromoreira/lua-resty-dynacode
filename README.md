@@ -168,6 +168,10 @@ What happens when plugin API is offline? If the plugins are already in memory, t
 
 # Road map
 
+* avoid re-compilation when no plugins were altered (should we emit `BG_UPDATED_PLUGINS` or a new event)
+* review the events adding arguments when necessary/possible (`BG_DIDNT_UPDATE_PLUGINS`)
+* add a CMS for the complete example
+* add a quick start for the complete example
 * ~~publish a rock~~
 * off-line mode (saving a local api response for -HUP/restart without link to API)
 * ~~use / provide function direct access / local function instead of tables (`ngx_now`, `tbl.logger`)~~
