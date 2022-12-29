@@ -2,52 +2,11 @@
 
 An openresty library provisioning dynamic (via JSON/API) load of lua code into the nginx/openresty.
 
-# How
-
-You create a CMS where you register **plugins**. A plugin belongs to a **server/domain** (`*`, regex, etc), it has an **nginx phase** (access, rewrite, log, etc), and the **lua code** it represents. Your CMS then must expose these plugins in [a known API/structure](/usage/response.json).
-
-```yaml
-domains:
-  - name: "webp.local.com"
-    plugins:
-      - name: Only_Webp
-        code: "if not ngx.re.find(ngx.var.uri, '\\\\.webp$') then ngx.exit(ngx.HTTP_NOT_FOUND) end"
-        phase: access
-      - name: Create_Webp
-        code: "ngx.say('this is a webp file, believe')"
-        phase: content
-  - name: "gateway.local.com"
-    plugins:
-      - name: Authorized
-        code: "if ngx.var.arg_token ~= '0xcafe' then ngx.exit(ngx.HTTP_UNAUTHORIZED) end"
-        phase: access
-```
-
-Once a JSON API is running, the openresty/nginx will `fetch` regularly the plugins (**in background**), `compile` them, and save them to cache. When a regular user issues a request then the `runner` will see if the current context (server name, phase, etc.) matches with the **plugin spec/requirements**, and run it.
-
-# Motivation
-
-Do what we already do with Lua, but without SIGHUP or deployment. It was [inspired by a previous hackathon](https://github.com/leandromoreira/edge-computing-resty#demo). Things this library enables you to do:
-
-* Debug (log/metrify specific IP/token/user agent/cookie)
-* Quick maneuvers:
-  * Block IP
-  * Deny requests per path/user agent/etc
-  * Drain a single server (302) / health check
-  * Turn on/off modules/variables
-  * ...
-* Chaos testing
-* Change any variables
-* Modify response body
-* Add response header (CORs, SCP, HSTS, X-Frame-Options,
- ...)
-* Really anything you can do with lua/openresty
-
-# Example (Quick Start)
+# Quick Start
 
 You can find a complete example in the [`usage`](/usage) folder. The following steps will guide you through the basic usage:
 
-Install the library `luarocks install resty-dynacode`
+Install the library: `luarocks install resty-dynacode`
 
 Create a lua module to import and configure the library.
 
@@ -107,6 +66,24 @@ http {
 }
 ```
 
+# Motivation
+
+Do what we already do with Lua, but without SIGHUP or deployment. It was [inspired by a previous hackathon](https://github.com/leandromoreira/edge-computing-resty#demo). Things this library enables you to do:
+
+* Debug (log/metrify specific IP/token/user agent/cookie)
+* Quick maneuvers:
+  * Block IP
+  * Deny requests per path/user agent/etc
+  * Drain a single server (302) / health check
+  * Turn on/off modules/variables
+  * ...
+* Chaos testing
+* Change any variables
+* Modify response body
+* Add response header (CORs, SCP, HSTS, X-Frame-Options,
+ ...)
+* Really anything you can do with lua/openresty
+
 
 # How it works
 
@@ -149,6 +126,29 @@ graph LR
 # Observability
 
 One [can use events](usage/src/controller.lua#L73) to expose metrics about the: `poller`, `fetcher`, `caching`, `compiler`, `runner`, and etc.
+
+# API format to provide functions
+
+You can create a CMS where you'll input your code, AKA **plugins**. A plugin belongs to a **server/domain** (`*`, regex, etc), it has an **nginx phase** (access, rewrite, log, etc), and the **lua code** it represents. Your CMS then must expose these plugins in [a known API/structure](/usage/response.json).
+
+```yaml
+domains:
+  - name: "webp.local.com"
+    plugins:
+      - name: Only_Webp
+        code: "if not ngx.re.find(ngx.var.uri, '\\\\.webp$') then ngx.exit(ngx.HTTP_NOT_FOUND) end"
+        phase: access
+      - name: Create_Webp
+        code: "ngx.say('this is a webp file, believe')"
+        phase: content
+  - name: "gateway.local.com"
+    plugins:
+      - name: Authorized
+        code: "if ngx.var.arg_token ~= '0xcafe' then ngx.exit(ngx.HTTP_UNAUTHORIZED) end"
+        phase: access
+```
+
+Once a JSON API is running, the openresty/nginx will `fetch` regularly the plugins (**in background**), `compile` them, and save them to cache. When a regular user issues a request then the `runner` will see if the current context (server name, phase, etc.) matches with the **plugin spec/requirements**, and run it.
 
 
 # Warning
