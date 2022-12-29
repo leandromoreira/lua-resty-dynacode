@@ -131,9 +131,12 @@ One [can use events](usage/src/controller.lua#L73) to expose metrics about the: 
 
 # API format to provide functions
 
-You can create a CMS where you'll input your code, AKA **plugins**. A plugin belongs to a **server/domain** (`*`, regex, etc), it has an **nginx phase** (access, rewrite, log, etc), and the **lua code** it represents. Your CMS then must expose these plugins in [a known API/structure](/usage/response.json).
+You can create a CMS where you'll input your code, AKA **plugins**. A plugin belongs to a **server/domain** (`*`, regex, etc), it has an **nginx phase** (access, rewrite, log, etc), and the **lua code** it represents. Your CMS then must expose these plugins in a known API/structure.
 
 ```yaml
+general:
+    status: "enabled"
+    skip_domains: ["[\\\\w\\\\d\\\\.\\\\-]*server.local.com"]
 domains:
   - name: "webp.local.com"
     plugins:
