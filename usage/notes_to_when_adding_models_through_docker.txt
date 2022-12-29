@@ -5,3 +5,13 @@
  1992  docker exec -it 5b1a9e252698  bin/rails generate active_admin:resource
  1993  docker exec -it 5b1a9e252698  bin/rails generate active_admin:resource Domain
  1994  docker exec -it 5b1a9e252698  bin/rails generate active_admin:resource Plugin
+
+ for searchable has many https://github.com/platanus/activeadmin_addons
+
+ form do |f|
+    f.inputs 'Title' do
+      f.input :title
+      f.input :model_ids, label: 'Models', as: :selected_list, collection: Model.all
+    end
+    actions
+  end

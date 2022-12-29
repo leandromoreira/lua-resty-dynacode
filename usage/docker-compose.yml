@@ -18,7 +18,7 @@ services:
 
   admin:
     build: ./admin
-    command: bash -c "./scripts/wait-for.sh db 3306 && rails db:migrate && rails s -p 3000 -b '0.0.0.0'"
+    command: bash -c "rm -f tmp/pids/* && ./scripts/wait-for.sh db 3306 && rails db:migrate && rails s -p 3000 -b '0.0.0.0'"
     volumes:
       - ./admin:/myapp
     ports:
