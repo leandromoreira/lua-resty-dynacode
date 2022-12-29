@@ -4,6 +4,8 @@ An openresty library provisioning dynamic (via JSON/API) load of lua code into t
 
 # Quick Start
 
+https://user-images.githubusercontent.com/55913/209971224-435e970a-8b60-4f12-a947-ff91d950b9a3.mp4
+
 You can find the complete example in the [`usage`](/usage) folder. The following steps will guide you through the basic usage:
 
 Install the library: `luarocks install resty-dynacode`
