@@ -1,0 +1,27 @@
+<%# https://developers.google.com/chart/interactive/docs/gallery/timeline %>
+<%= javascript_include_tag "https://www.gstatic.com/charts/loader.js" %>
+
+<script type="text/javascript">
+  google.charts.load("current", {packages:["timeline"]});
+  google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+
+    var container = document.getElementById('example3.1');
+    var chart = new google.visualization.Timeline(container);
+    var dataTable = new google.visualization.DataTable();
+    dataTable.addColumn({ type: 'string', id: 'Channel' });
+    dataTable.addColumn({ type: 'string', id: 'Name' });
+    dataTable.addColumn({ type: 'date', id: 'Start' });
+    dataTable.addColumn({ type: 'date', id: 'End' });
+    dataTable.addRows([ <%= @timeline %>]);
+
+    var options = {
+      timeline: { groupByRowLabel: true },
+      height: 1000,
+    };
+
+    chart.draw(dataTable, options);
+  }
+</script>
+
+<div id="example3.1"></div>

@@ -44,3 +44,7 @@ luac.out
 
 # perl/nginx runtime test files
 t/servroot
+
+# mysql
+usage/mysqldata/*
+!usage/mysqldata/.gitkeep

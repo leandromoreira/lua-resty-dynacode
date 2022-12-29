@@ -11,18 +11,32 @@ services:
       - "5050:5050"
       - "6060:6060"
       - "7070:7070"
-      - "8080:8080"
     links:
-      - api
+      - admin
     depends_on:
-      - api
+      - admin
 
-  api:
-    build:
-      context: .
+  admin:
+    build: ./admin
+    command: bash -c "./scripts/wait-for.sh db 3306 && rails db:migrate && rails s -p 3000 -b '0.0.0.0'"
     volumes:
-      - "./response.json:/api/response.json"
-      - "./api.conf:/usr/local/openresty/nginx/conf/nginx.conf"
+      - ./admin:/myapp
     ports:
-      - "9090:9090"
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASSWORD=secret
+      - DB_NAME=admin
 
+  db:
+    image:  mariadb:10.9.4
+    volumes:
+      - "./mysqldata:/var/lib/mysql"
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_DATABASE=admin
+      - MYSQL_TCP_PORT=3306

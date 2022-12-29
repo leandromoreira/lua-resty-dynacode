@@ -2,7 +2,7 @@ local dyna_controller = require "resty.dynacode.controller"
 local controller = {}
 
 local ok, setup_err = dyna_controller.setup({
-  plugin_api_uri = "http://api:9090/response.json",
+  plugin_api_uri = "http://admin:3000/plugins/index.json",
   plugin_api_polling_interval = 15,
   plugin_api_poll_at_init = true,
   workers_max_jitter = 5,
