@@ -48,23 +48,13 @@ http {
 
   # the servers we want to add lua code
   server {
-    listen 7070;
-    server_name  gateway.local.com;
-
-    location / {
-      proxy_pass http://$gateway_upstream;
-    }
-  }
-
-  server {
-    listen 8080;
-    server_name  webp.local.com;
+    listen 6060;
+    server_name  dynamic.local.com;
 
     location / {
       content_by_lua_block { require("controller").run() }
     }
   }
-
 }
 ```
 
