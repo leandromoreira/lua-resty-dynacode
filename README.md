@@ -4,7 +4,7 @@ An openresty library provisioning dynamic (via JSON/API) load of lua code into n
 
 # Quick Start
 
-https://user-images.githubusercontent.com/55913/210080429-80784d9d-9155-4483-86be-d2e19fca61df.mp4
+https://user-images.githubusercontent.com/55913/210108208-6556981d-a59f-43cb-b080-5a2185ea62f2.mp4
 
 You can find the complete example in the [`usage`](/usage) folder. The following steps will guide you through the basic usage:
 
