@@ -163,6 +163,7 @@ What happens when plugin API is offline? If the plugins are already in memory, t
 
 # Road map
 
+* enable some way for user to setup the request for polling (providing authentication, and etc)
 * avoid re-compilation when no plugins were altered (should we emit `BG_UPDATED_PLUGINS` or a new event)
 * review the events adding arguments when necessary/possible (for instance `BG_DIDNT_UPDATE_PLUGINS`)
 * ~add a CMS for the complete example~
