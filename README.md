@@ -123,24 +123,37 @@ One [can use events](usage/src/controller.lua#L73) to expose metrics about the: 
 
 You can create a CMS where you'll input your code, AKA **plugins**. A plugin belongs to a **server/domain** (`*`, regex, etc), it has an **nginx phase** (access, rewrite, log, etc), and the **lua code** it represents. Your CMS then must expose these plugins in a known API/structure.
 
-```yaml
-general:
-    status: "enabled"
-    skip_domains: ["[\\\\w\\\\d\\\\.\\\\-]*server.local.com"]
-domains:
-  - name: "webp.local.com"
-    plugins:
-      - name: Only_Webp
-        code: "if not ngx.re.find(ngx.var.uri, '\\\\.webp$') then ngx.exit(ngx.HTTP_NOT_FOUND) end"
-        phase: access
-      - name: Create_Webp
-        code: "ngx.say('this is a webp file, believe')"
-        phase: content
-  - name: "gateway.local.com"
-    plugins:
-      - name: Authorized
-        code: "if ngx.var.arg_token ~= '0xcafe' then ngx.exit(ngx.HTTP_UNAUTHORIZED) end"
-        phase: access
+```json
+{
+   "general": {
+      "status": "enabled",
+      "skip_domains": [
+         "[\\\\w\\\\d\\\\.\\\\-]*server.local.com"
+      ]
+   },
+   "domains": [
+      {
+         "name": "dynamic.local.com",
+         "plugins": [
+            {
+               "name": "dynamic content",
+               "code": "ngx.say(\"olá mundo!\")\r\nngx.say(\"hello world!\")",
+               "phase": "content"
+            },
+            {
+               "name": "adding cors headers",
+               "code": "ngx.header[\"Access-Control-Allow-Origin\"] = \"http://dynamic.local.com\"",
+               "phase": "header_filter"
+            },
+            {
+               "name": "authentication required",
+               "code": "local token = ngx.var.arg_token or ngx.var.cookie_superstition\r\n\r\nif token ~= 'token' then\r\n  return ngx.exit(ngx.HTTP_FORBIDDEN)\r\nelse\r\n  ngx.header['Set-Cookie'] = {'superstition=token'}\r\nend",
+               "phase": "access"
+            }
+         ]
+      }
+   ]
+}
 ```
 
 Once a JSON API is running, the openresty/nginx will `fetch` regularly the plugins (**in background**), `compile` them, and save them to cache. When a regular user issues a request then the `runner` will see if the current context (server name, phase, etc.) matches with the **plugin spec/requirements**, and run it.
