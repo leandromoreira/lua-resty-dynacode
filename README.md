@@ -176,6 +176,36 @@ What happens when plugin API is offline? If the plugins are already in memory, t
 
 # Road map
 
+* evaluate if having plugins separated from domains might be helpful (re-use among domains)
+```json
+{
+   "general": {
+   },
+   "domains": [
+      {
+         "name": "dynamic.local.com",
+         "plugins": [1, 2]
+      }
+   ]
+   "plugins": [
+            {
+               "id": 1,
+               "name": "dynamic content",
+               "code": "ngx.say(\"olá mundo!\")\r\nngx.say(\"hello world!\")",
+               "phase": "content"
+            },
+            {
+               "id": 2,
+               "name": "adding cors headers",
+               "code": "ngx.header[\"Access-Control-Allow-Origin\"] = \"http://dynamic.local.com\"",
+               "phase": "header_filter"
+            }
+    ]
+
+}
+```
+> *another way to have a plugin per multiple domains* is to rely on `*` or regexes `.*\.domain.com`
+* CMS probably would benefit from having plugins code at a git repo (linked through its git path) and only render them at the response time
 * enable some way for user to setup the request for polling (providing authentication, and etc)
 * avoid re-compilation when no plugins were altered (should we emit `BG_UPDATED_PLUGINS` or a new event)
 * review the events adding arguments when necessary/possible (for instance `BG_DIDNT_UPDATE_PLUGINS`)
