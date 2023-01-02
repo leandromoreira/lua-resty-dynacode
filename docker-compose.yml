@@ -19,7 +19,7 @@ services:
       service: base
 
   prove_test:
-    command: bash -c "whoami && groups root && ls -lah /lua/t/ && ls -lah /lua/t/servroot/ && prove -r t"
+    command: bash -c "prove -r t"
     extends:
       service: base
 
