@@ -204,8 +204,10 @@ What happens when plugin API is offline? If the plugins are already in memory, t
 
 }
 ```
-> *another way to have a plugin per multiple domains* is to rely on `*` or regexes `.*\.domain.com`
-* CMS probably would benefit from having plugins code at a git repo (linked through its git path) and only render them at the response time
+> *another way to have a plugin per multiple domains* is to rely on `*` or regexes `.*\.common.com`
+* CMS probably would benefit from having plugins code at a git repo (linked through its git path, therefore tested and developed like any other lua code already) and only render them at the response time
+* measure the impact of lots of lua code being loaded (even though it's compressed), if there's any need to load the plugins per chunk/domain/whatever
+* make CMS run a lua compile phase to avoid uncompiled code being deployed
 * enable some way for user to setup the request for polling (providing authentication, and etc)
 * avoid re-compilation when no plugins were altered (should we emit `BG_UPDATED_PLUGINS` or a new event)
 * review the events adding arguments when necessary/possible (for instance `BG_DIDNT_UPDATE_PLUGINS`)
